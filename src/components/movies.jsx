@@ -48,13 +48,13 @@ class Movies extends Component {
 
     return (
       <div className="row">
-        <div className="col-2">
+        <div className="col-3">
           <ListGroup
             selectedItem={this.state.selectItem}
             onGenreClick={this.handleGenreClick}
           />
         </div>
-        <div className="col">
+        <div className="col-9">
           <table className="table">
             <thead>
               <tr>
@@ -92,7 +92,7 @@ class Movies extends Component {
             </tbody>
           </table>
         </div>
-        <div className="row">
+        <div className="col">
           <Pagination
             itemsCount={count}
             pageSize={pageSize}
