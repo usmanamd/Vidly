@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { getMovies } from "../services/fakeMovieService";
+import { getGenres } from "../services/fakeGenreService";
 import Like from "./shared/like";
 import Pagination from "./shared/pagination";
 import { paginate } from "../utils/paginate";
@@ -7,16 +8,22 @@ import ListGroup from "./listGroup";
 
 class Movies extends Component {
   state = {
-    movies: getMovies(),
-    pageSize: 5,
+    movies: [],
+    genres: [],
+    pageSize: 4,
     currentPage: 1,
-    selectItem: 1
+    selectedGenre: 0
   };
 
   handleDelete = movie => {
     const movies = this.state.movies.filter(m => m._id !== movie._id);
     this.setState({ movies });
   };
+
+  componentDidMount() {
+    const genres = [{ name: "All genres" }, ...getGenres()];
+    this.setState({ movies: getMovies(), genres });
+  }
 
   handleLike = movie => {
     const movies = [...this.state.movies];
@@ -30,31 +37,38 @@ class Movies extends Component {
     this.setState({ currentPage: page });
   };
 
-  handleGenreClick = genre => {
-    console.log(genre);
-    this.setState({ selectItem: genre });
-    const mov = this.state.movies;
-    let movies = mov.filter(m => m.genre._id === genre._id);
-    this.setState({ movies });
+  handleGenreSelect = genre => {
+    this.setState({ selectedGenre: genre, currentPage: 1 });
   };
 
   render() {
     const { length: count } = this.state.movies;
-    const { pageSize, currentPage, movies: allMovies } = this.state;
+    const {
+      pageSize,
+      currentPage,
+      selectedGenre,
+      movies: allMovies
+    } = this.state;
 
     if (count === 0) return <p>There are no movies in the databse</p>;
+    const filtered =
+      selectedGenre && selectedGenre._id
+        ? allMovies.filter(m => m.genre._id === selectedGenre._id)
+        : allMovies;
 
-    const movies = paginate(allMovies, currentPage, pageSize);
+    const movies = paginate(filtered, currentPage, pageSize);
 
     return (
       <div className="row">
-        <div className="col-3">
+        <div className="col-3 m-2">
           <ListGroup
-            selectedItem={this.state.selectItem}
-            onGenreClick={this.handleGenreClick}
+            items={this.state.genres}
+            selectedItem={selectedGenre}
+            onItemSelect={this.handleGenreSelect}
           />
         </div>
-        <div className="col-9">
+        <div className="col">
+          <p>showing {filtered.length} movies in the database</p>
           <table className="table">
             <thead>
               <tr>
@@ -91,10 +105,8 @@ class Movies extends Component {
               ))}
             </tbody>
           </table>
-        </div>
-        <div className="col">
           <Pagination
-            itemsCount={count}
+            itemsCount={filtered.length}
             pageSize={pageSize}
             currentPage={currentPage}
             onPageChange={this.handlePageChange}
