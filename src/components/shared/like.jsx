@@ -1,14 +1,13 @@
 import React, { Component } from "react";
 class Like extends Component {
   render() {
-    let classes = "fa fa-heart";
+    let classes = "clickable fa fa-heart";
     if (!this.props.liked) classes += "-o";
     return (
       <span>
         <i
           onClick={this.props.onClick}
           className={classes}
-          style={{ cursor: "pointer" }}
           area-hidden="true"
         ></i>
       </span>

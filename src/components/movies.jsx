@@ -11,8 +11,7 @@ class Movies extends Component {
     movies: [],
     genres: [],
     pageSize: 4,
-    currentPage: 1,
-    selectedGenre: 1
+    currentPage: 1
   };
 
   handleDelete = movie => {
